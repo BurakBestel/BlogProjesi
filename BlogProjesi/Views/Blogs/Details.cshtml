@@ -1,0 +1,57 @@
+﻿@model Blog
+
+
+<div class="mainbar">
+    <div class="article">
+        <h2><span>@Model.name</span> </h2>
+        <div class="clr"></div>
+       
+        <p>@Model.description </p>
+        <p>Etikerler: <a href="#">orci</a>, <a href="#">lectus</a>, <a href="#">varius</a>, <a href="#">turpis</a></p>
+        <p><a href="#"><strong>Comments (@Model.comment)</strong></a> <span>&nbsp;&bull;&nbsp;</span> @Model.Publishdate.ToString("MMMM d\\t\\h, yyyy 'at' h:mm tt") <span>&nbsp;&bull;&nbsp;</span> <a href="#"><strong>Edit</strong></a></p>
+    </div>
+    <div class="article">
+        <h2><span>Yorumlar</span> </h2>
+        <div class="clr"></div>
+        @foreach (var item in ViewBag.Comments)
+        {
+            <div class="comment">
+                <a href="#"><img src="/images/userpic.gif" width="40" height="40" alt="" class="userpic" /></a>
+                <p>
+                    <a href="#">@item.Isim</a> :<br />
+                    @item.PublishDate.ToString("MMMM d\\t\\h, yyyy 'at' h:mm tt")
+                </p>
+                <p>@item.Yorum</p>
+            </div>
+        }
+
+        
+        
+    </div>
+    <div class="article">
+        <h2><span>Yorum</span> Yapın</h2>
+        <div class="clr"></div>
+        <form action="/Blogs/CreateComment" method="post" id="leavereply">
+            <ol>
+                <input id="blogid" name="BlogId" type="hidden" value="@Model.Id" />
+                <li>
+                    <label for="name">Isim (Zorunlu)</label>
+                    <input id="name" name="Isim" class="text" required/>
+                </li>
+                <li>
+                    <label for="email">Email Addresi (Zorunlu)</label>
+                    <input id="email" name="Email" class="text" required />
+                </li>
+                
+                <li>
+                    <label for="message">Yorumunuz</label>
+                    <textarea id="message" name="Yorum" rows="8" cols="50"></textarea>
+                </li>
+                <li>
+                    <input type="image" name="imageField" id="imageField" src="/images/submit.gif" class="send" />
+                    <div class="clr"></div>
+                </li>
+            </ol>
+        </form>
+    </div>
+</div>
