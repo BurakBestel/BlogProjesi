@@ -11,5 +11,6 @@
         public int like { get; set; }
         public int comment { get; set; }
         public int viewcount { get; set; }
+        public int status { get; set; }
     }
 }
