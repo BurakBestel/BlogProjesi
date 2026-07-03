@@ -1,5 +1,8 @@
 ﻿using BlogProjesi.Context;
+using BlogProjesi.Identity;
 using BlogProjesi.Models;
+using BlogProjesi.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogProjesi.Controllers
@@ -7,10 +10,12 @@ namespace BlogProjesi.Controllers
     public class AdminController : Controller
     {
         private readonly BlogDbContext _context;
+        private readonly UserManager<BlogIdentityUser> _userManager;
         
-        public AdminController(BlogDbContext context)
+        public AdminController(BlogDbContext context,UserManager<BlogIdentityUser>userManager)
         {
             _context = context;
+            _userManager= userManager;
         }
 
         public IActionResult Index()
@@ -99,6 +104,40 @@ namespace BlogProjesi.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Comments");
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (model.Password == model.Repassword)
+            {
+                var user = new BlogIdentityUser
+                {
+                    Name = model.Name,
+                    Surname= model.Surname,
+                    Email = model.Email,
+                    UserName=model.Email
+                };
+                var result = await _userManager.CreateAsync(user,model.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    return View();
+                }
+            }
+            else
+            {
+                return View();
+            }
+               
         }
     }
 }
