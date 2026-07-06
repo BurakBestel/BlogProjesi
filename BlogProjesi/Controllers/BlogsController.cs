@@ -1,5 +1,8 @@
 ﻿using BlogProjesi.Context;
+using BlogProjesi.Identity;
 using BlogProjesi.Models;
+using BlogProjesi.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogProjesi.Controllers
@@ -8,9 +11,11 @@ namespace BlogProjesi.Controllers
     {
 
         private readonly BlogDbContext _context;
+        
         public BlogsController(BlogDbContext context)
         {
             _context = context;
+            
         }
         public IActionResult Index()
         {
@@ -59,5 +64,6 @@ namespace BlogProjesi.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
+        
     }
 }

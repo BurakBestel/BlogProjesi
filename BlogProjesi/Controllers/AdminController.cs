@@ -2,25 +2,50 @@
 using BlogProjesi.Identity;
 using BlogProjesi.Models;
 using BlogProjesi.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogProjesi.Controllers
 {
+    [Authorize]
     public class AdminController : Controller
     {
         private readonly BlogDbContext _context;
         private readonly UserManager<BlogIdentityUser> _userManager;
-        
-        public AdminController(BlogDbContext context,UserManager<BlogIdentityUser>userManager)
+        private readonly SignInManager<BlogIdentityUser> _signinManager;
+        public AdminController(BlogDbContext context,UserManager<BlogIdentityUser>userManager,
+            SignInManager<BlogIdentityUser> signinManager )
         {
             _context = context;
             _userManager= userManager;
+            _signinManager= signinManager;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var dashboard = new DashboardViewModel();
+
+            var toplamblogsayiyi = _context.Blogs.Count();
+            var toplamgoruntulenme = _context.Blogs.Select(x => x.viewcount).Sum();
+            var encokgoruntulenenblog = _context.Blogs.OrderByDescending(x => x.viewcount).FirstOrDefault();
+            var ensonyayinlananblog = _context.Blogs.OrderByDescending(x => x.Publishdate).FirstOrDefault();
+            var toplamyorumsayisi = _context.Comments.Count();
+            var encokyorumalanblogıd = _context.Comments.GroupBy(x => x.BlogId).OrderByDescending(x => x.Count())
+                                        .Select(x => x.Key).FirstOrDefault();
+            var encokyorumalanblog = _context.Blogs.Where(x => x.Id == encokyorumalanblogıd).FirstOrDefault();
+            var bugunyapilanyorumsayisi = _context.Comments.Where(x => x.PublishDate.Date == DateTime.Now.Date).Count();
+
+
+            dashboard.TotalBLogCount = toplamblogsayiyi;
+            dashboard.TotalViewCount = toplamgoruntulenme;
+            dashboard.MostViewedBlog = encokgoruntulenenblog;
+            dashboard.LatestBlog = ensonyayinlananblog; 
+            dashboard.TotalCommentCount = toplamyorumsayisi;
+            dashboard.MostCommentedBlog = encokyorumalanblog;
+            dashboard.TodayCommentCount = bugunyapilanyorumsayisi;
+
+            return View(dashboard);
         }
         public IActionResult Blogs()
         {   
@@ -139,5 +164,16 @@ namespace BlogProjesi.Controllers
             }
                
         }
+        public async Task<IActionResult> Logout()
+        {
+            await _signinManager.SignOutAsync();
+            return RedirectToAction("Index","Blogs");
+        }
+        public IActionResult Contact()
+        {
+            var contact = _context.Contacts.ToList();
+            return View(contact);
+        }
+        
     }
 }
