@@ -17,6 +17,10 @@ namespace BlogProjesi.Controllers
             _context = context;
             
         }
+        public IActionResult deneme()
+        {
+            return View();
+        }
         public IActionResult Index()
         {
             var blogs = _context.Blogs.ToList();
